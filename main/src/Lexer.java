@@ -14,7 +14,7 @@ public class Lexer {
     public void Analise(){
         for (String lexemName: Regexp.lexems.keySet()) {
             Matcher m = Regexp.lexems.get(lexemName).matcher(code);
-            if (m.find()) {
+            while (m.find()) {
                 System.out.println(lexemName + " found ");
                 tokens.add(new Token(lexemName, m.group()));
             }
