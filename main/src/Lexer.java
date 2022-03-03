@@ -4,7 +4,7 @@ import java.util.regex.Matcher;
 
 
 public class Lexer {
-    private String code;
+    private final String code;
     List<Token> tokens = new LinkedList<>();
 
     Lexer(String code){
