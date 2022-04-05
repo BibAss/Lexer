@@ -16,7 +16,8 @@ public class Lexer
     public void Analise()
     {
         int staticIndex = 0, dynamicIndex = 0;
-        int crutch = 0;
+        boolean exit = false;
+        boolean success = false;
         boolean stop = false;
         while(true)
         {
@@ -31,6 +32,12 @@ public class Lexer
                 stop = true;
             }
             StringBuilder buffer = new StringBuilder(code.substring(staticIndex, dynamicIndex));
+            String buf = buffer.toString();
+            if(buf.equals("\n") || buf.equals(" "))
+            {
+                staticIndex = dynamicIndex;
+                continue;
+            }
             if(stop)
             {
                 buffer.append(" ");
@@ -40,10 +47,11 @@ public class Lexer
                 Matcher matcher = Regexp.lexems.get(lexemeName).matcher(buffer);
                 if(matcher.matches())
                 {
-                    crutch += 1;
+                    success = true;
+                    break;
                 }
             }
-            if(crutch == 0)
+            if(!success)
             {
                 buffer.delete(buffer.length() - 1, buffer.length());
                 String token = buffer.toString();
@@ -52,13 +60,32 @@ public class Lexer
                     Matcher matcher = Regexp.lexems.get(lexemeName).matcher(buffer);
                     if(matcher.matches())
                     {
+                        if(lexemeName == "VAR")
+                        {
+                            for(String lexeme: Regexp.KeyWords.keySet())
+                            {
+                                Matcher matcherPriority = Regexp.KeyWords.get(lexeme).matcher(buffer);
+                                if(matcherPriority.matches())
+                                {
+                                    exit = true;
+                                    tokens.add(new Token(lexeme, token));
+                                    break;
+                                }
+                            }
+                            if(exit)
+                            {
+                                exit = false;
+                                break;
+                            }
+                        }
                         tokens.add(new Token(lexemeName, token));
                         break;
                     }
                 }
-                staticIndex = dynamicIndex - 1;
+                dynamicIndex -= 1;
+                staticIndex = dynamicIndex;
             }
-            crutch = 0;
+            success = false;
         }
     }
 

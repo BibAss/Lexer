@@ -11,9 +11,12 @@ public class Regexp {
         lexems.put("OP", Pattern.compile("[+]|[-]|[*]|[/]"));
         lexems.put("BRA_OPEN", Pattern.compile("\\("));
         lexems.put("BRA_CLOSE", Pattern.compile("\\)"));
-        lexems.put("IF_KW", Pattern.compile("if"));
-        lexems.put("ELSE_KW", Pattern.compile("else"));
-        lexems.put("FOR_KW", Pattern.compile("for"));
-        lexems.put("WHILE_KW", Pattern.compile("while"));
+    }
+    public static final Map<String, Pattern> KeyWords = new HashMap<>();
+    static {
+        KeyWords.put("IF_KW", Pattern.compile("if"));
+        KeyWords.put("ELSE_KW", Pattern.compile("else"));
+        KeyWords.put("FOR_KW", Pattern.compile("for"));
+        KeyWords.put("WHILE_KW", Pattern.compile("while"));
     }
 }
