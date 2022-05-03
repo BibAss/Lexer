@@ -7,6 +7,13 @@ public class Token {
         this.value = value;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public String getValue() {
+        return value;
+    }
 
     @Override
     public String toString(){

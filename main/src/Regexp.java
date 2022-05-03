@@ -11,6 +11,7 @@ public class Regexp {
         lexems.put("OP", Pattern.compile("[+]|[-]|[*]|[/]"));
         lexems.put("BRA_OPEN", Pattern.compile("\\("));
         lexems.put("BRA_CLOSE", Pattern.compile("\\)"));
+        lexems.put("SEMICOLON", Pattern.compile(";"));
     }
     public static final Map<String, Pattern> KeyWords = new HashMap<>();
     static {
