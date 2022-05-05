@@ -3,10 +3,10 @@ import java.util.List;
 import java.util.ListIterator;
 
 public class Parser {
-    private List<Token> tokenList;
-    private List<Expression> expressionList = new LinkedList<>();
+    private final List<Token> tokenList;
+    private final List<Expression> expressionList = new LinkedList<>();
     private Token currentToken;
-    private ListIterator dynamicIter;
+    private final ListIterator dynamicIter;
     private ListIterator staticIter;
     private boolean stop = false;
 
@@ -130,14 +130,11 @@ public class Parser {
 ////////Отслеживаю конец строки/////////////////////////////////////////////////////////////////////////////////////////
     private boolean EndOfString()
     {
-            currentToken = (Token) dynamicIter.next();
-            dynamicIter.previous();
-            if (currentToken.getType().equals("SEMICOLON")) {
-                return true;
-            }
-            else return false;
+        currentToken = (Token) dynamicIter.next();
+        dynamicIter.previous();
+        return currentToken.getType().equals("SEMICOLON");
     }
-////////Отслеживаю конец кода///////////////////////////////////////////////////////////////////////////////////////////
+////////Отслеживаю конец кода (возможно мне необходимо знать про exceptions)///////////////////////////////////////////////////////////////////////////////////////////
     private boolean EndOfCode()
     {
         if(!dynamicIter.hasNext())
