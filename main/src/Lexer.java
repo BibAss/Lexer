@@ -13,7 +13,7 @@ public class Lexer
         this.code = code;
     }
 
-    public void Analise()
+    public void LexicalAnalysis()
     {
         int staticIndex = 0, dynamicIndex = 0;
         boolean exit = false;
@@ -89,10 +89,12 @@ public class Lexer
         }
     }
 
-    public void Tokens()
+    public List<Token> Tokens()
     {
         for (Token token: tokens) {
             System.out.println(token);
         }
+
+        return tokens;
     }
 }
