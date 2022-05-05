@@ -8,22 +8,24 @@ public class Parser {
     private Token currentToken;
     private ListIterator dynamicIter;
     private ListIterator staticIter;
+    private boolean stop = false;
 
     Parser(List<Token> tokens)
     {
         this.tokenList = tokens;
         this.dynamicIter = tokenList.listIterator();
     }
-
+///////////Ставлю статический индекс перед листом токенов и пока не кончится лист произвожу его синтаксический анализ///
     public void Parsing()
     {
         staticIter = tokenList.listIterator();
         while (dynamicIter.hasNext())
         {
             SyntaxAnalysis();
+            if (stop) return;
         }
     }
-
+///////////Проверяю какой терминал стоит в начале обрабатываемого участка (выражения)///////////////////////////////////
     private void SyntaxAnalysis()
     {
         Token token = (Token) dynamicIter.next();
@@ -37,19 +39,32 @@ public class Parser {
         }
 
     }
-
+//////Обрабатываю нетерминал assign/////////////////////////////////////////////////////////////////////////////////////
     private void assign()
     {
-        EndOfCode();
+        if(EndOfCode())
+        {
+            return;
+        }
         currentToken = (Token) dynamicIter.next();
         if (currentToken.getType().equals("ASSIGN_OP"))
         {
             expr_value();
         }
+        else
+        {
+            System.out.println("Error: syntax error in assign expression");
+            stop = true;
+            return;
+        }
     }
-
+/////////Обрабатываю нетерминал expr_value//////////////////////////////////////////////////////////////////////////////
     private void expr_value()
     {
+        if(EndOfCode())
+        {
+            return;
+        }
         currentToken = (Token) dynamicIter.next();
         if (currentToken.getType().equals("VAR") | currentToken.getType().equals("DIGIT"))
         {
@@ -60,18 +75,31 @@ public class Parser {
             }
             else op_value();
         }
+        else
+        {
+            System.out.println("Error: syntax error in assign expression");
+            stop = true;
+            return;
+        }
     }
-
+//////////Обрабатываю нетерминал op_value///////////////////////////////////////////////////////////////////////////////
     private void op_value()
     {
+        if(EndOfCode())
+        {
+            return;
+        }
         currentToken = (Token) dynamicIter.next();
         if (currentToken.getType().equals("VAR") | currentToken.getType().equals("DIGIT"))
         {
+            if(EndOfCode())
+            {
+                return;
+            }
             if(EndOfString())
             {
                 dynamicIter.next();
                 MakeExpression();
-                System.out.println(expressionList);
             }
             else op_value();
         }
@@ -79,8 +107,14 @@ public class Parser {
         {
             op_value();
         }
+        else
+        {
+            System.out.println("Error: syntax error in assign expression");
+            stop = true;
+            return;
+        }
     }
-
+////////Создаю выражение путём последовательного перехода статического итератора к динамическому////////////////////////
     private void MakeExpression()
     {
         Expression expression = new Expression();
@@ -90,26 +124,27 @@ public class Parser {
             expression.Add(currentToken);
         }
         expressionList.add(expression);
+        System.out.println(expressionList);
         return;
     }
-
+////////Отслеживаю конец строки/////////////////////////////////////////////////////////////////////////////////////////
     private boolean EndOfString()
     {
-        currentToken = (Token) dynamicIter.next();
-        dynamicIter.previous();
-        if(currentToken.getType().equals("SEMICOLON"))
-        {
-            return true;
-        }
-        else return false;
+            currentToken = (Token) dynamicIter.next();
+            dynamicIter.previous();
+            if (currentToken.getType().equals("SEMICOLON")) {
+                return true;
+            }
+            else return false;
     }
-
-    private void EndOfCode()
+////////Отслеживаю конец кода///////////////////////////////////////////////////////////////////////////////////////////
+    private boolean EndOfCode()
     {
         if(!dynamicIter.hasNext())
         {
             System.out.println("Error: there is no ; or expression is wrong");
-            return;
+            return true;
         }
+        return false;
     }
 }
