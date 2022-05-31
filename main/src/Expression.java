@@ -2,8 +2,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Expression {
-    private List<Token> exprList = new LinkedList<>();
-    private StringBuilder expression = new StringBuilder("");
+    private final List<Token> exprList = new LinkedList<>();
+    private final StringBuilder expression = new StringBuilder("");
 
     public void Add(Token token)
     {

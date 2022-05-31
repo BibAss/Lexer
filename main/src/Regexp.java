@@ -12,6 +12,9 @@ public class Regexp {
         lexems.put("BRA_OPEN", Pattern.compile("\\("));
         lexems.put("BRA_CLOSE", Pattern.compile("\\)"));
         lexems.put("SEMICOLON", Pattern.compile(";"));
+        lexems.put("CYCLE_START", Pattern.compile("\\{"));
+        lexems.put("CYCLE_STOP", Pattern.compile("}"));
+        lexems.put("COMP_OP", Pattern.compile("[>]|[<]"));
     }
     public static final Map<String, Pattern> KeyWords = new HashMap<>();
     static {
