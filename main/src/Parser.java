@@ -1,4 +1,3 @@
-import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -10,7 +9,7 @@ public class Parser {
     private final ListIterator dynamicIter;
     private ListIterator staticIter;
     private boolean stop = false;
-    private boolean cycle = false;
+    private boolean dell = false;
 
     Parser(List<Token> tokens)
     {
@@ -43,7 +42,9 @@ public class Parser {
         dynamicIter.previous();
         if(assign())
         {
+            dell = true;
             MakeExpression();
+            dell = false;
         }
         else if(while_cycle())
         {
@@ -272,6 +273,7 @@ public class Parser {
             currentToken = (Token) staticIter.next();
             expression.Add(currentToken);
         }
+        if(dell) expression.Del();
         expressionList.add(expression);
         return;
     }
