@@ -50,6 +50,10 @@ public class Parser {
         {
             MakeExpression();
         }
+        else if(isIf())
+        {
+            MakeExpression();
+        }
         else {
             System.out.println("Error: there is no such expression starting with " + startToken.getType());
             stop = true;
@@ -129,6 +133,33 @@ public class Parser {
             if(expr_value())
             {
                 return op_inf();
+            }else return false;
+        }else return false;
+    }
+
+    private boolean isIf()
+    {
+        if(if_kw())
+        {
+            if(condition())
+            {
+                if (cycle_start())
+                {
+                    if(cycle_body())
+                    {
+                        if(else_kw())
+                        {
+                            if(cycle_start())
+                            {
+                                return cycle_body();
+                            }else return false;
+                        }
+                        else
+                        {
+                            return true;
+                        }
+                    }else return false;
+                }else return false;
             }else return false;
         }else return false;
     }
@@ -380,6 +411,34 @@ public class Parser {
     {
         currentToken = (Token) dynamicIter.next();
         if(currentToken.getType().equals("BRA_CLOSE"))
+        {
+            return true;
+        }
+        else
+        {
+            dynamicIter.previous();
+            return false;
+        }
+    }
+
+    private boolean if_kw()
+    {
+        currentToken = (Token) dynamicIter.next();
+        if(currentToken.getType().equals("IF_KW"))
+        {
+            return true;
+        }
+        else
+        {
+            dynamicIter.previous();
+            return false;
+        }
+    }
+
+    private boolean else_kw()
+    {
+        currentToken = (Token) dynamicIter.next();
+        if(currentToken.getType().equals("ELSE_KW"))
         {
             return true;
         }

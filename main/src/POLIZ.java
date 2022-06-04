@@ -72,6 +72,10 @@ public class POLIZ {
             rpnToAnswerWhile(rpn);
             return;
         }
+        if (rpn.get(0).getType().equals("IF_KW")) {
+            rpnToAnswerIf(rpn);
+            return;
+        }
         calculate(rpn);
     }
 
@@ -148,6 +152,123 @@ public class POLIZ {
             calculate(body);
         }
     }
+
+    private void rpnToAnswerIf(LinkedList<Token> rpn) {
+        LinkedList<Token> cond = new LinkedList<>();
+        LinkedList<Token> body = new LinkedList<>();
+        LinkedList<Token> bodyElse = new LinkedList<>();
+        boolean boolElse = false;
+        int indexElse = 0;
+
+        for (int i = 0; i < rpn.size(); i++) {
+            if (rpn.get(i).getType().equals("ELSE_KW")) {
+                boolElse = true;
+                indexElse = i;
+                break;
+            }
+        }
+        if (!boolElse) {
+            for (int i = 1; i < 4; i++) cond.add(rpn.get(i));
+            for (int i = 4; i < rpn.size(); i++) body.add(rpn.get(i));
+        } else {
+            for (int i = 1; i < 4; i++) cond.add(rpn.get(i));
+            for (int i = 4; i < indexElse; i++) body.add(rpn.get(i));
+            for (int i = indexElse + 1; i < rpn.size(); i++) bodyElse.add(rpn.get(i));
+        }
+
+        if (condition_if(cond)) calculate_if(body);
+        else calculate_if(bodyElse);
+        //System.out.println(condition(cond));
+    }
+
+    private void calculate_if(LinkedList<Token> rpn) {
+        Stack<Token> stack = new Stack<>();
+
+        for (Token i : rpn) {
+            if (getPriority(i) == 0) stack.push(i);
+            if (getPriority(i) > 1) {
+                Token a = stack.pop(), b = stack.pop();
+                double dur1, dur2;
+
+                switch (i.getValue().charAt(0)) {
+                    case '+' -> {
+                        if (a.getType().equals("VAR")) dur1 = variables.get(a.getValue());
+                        else dur1 = Double.parseDouble(a.getValue());
+
+                        if (b.getType().equals("VAR")) dur2 = variables.get(b.getValue());
+                        else dur2 = Double.parseDouble(b.getValue());
+
+                        stack.push(new Token("DIGIT", String.valueOf(dur2 + dur1)));
+                    }
+                    case '-' -> {
+                        if (a.getType().equals("VAR")) dur1 = variables.get(a.getValue());
+                        else dur1 = Double.parseDouble(a.getValue());
+
+                        if (b.getType().equals("VAR")) dur2 = variables.get(b.getValue());
+                        else dur2 = Double.parseDouble(b.getValue());
+
+                        stack.push(new Token("DIGIT", String.valueOf(dur2 - dur1)));
+                    }
+                    case '/' -> {
+                        if (a.getType().equals("VAR")) dur1 = variables.get(a.getValue());
+                        else dur1 = Double.parseDouble(a.getValue());
+
+                        if (b.getType().equals("VAR")) dur2 = variables.get(b.getValue());
+                        else dur2 = Double.parseDouble(b.getValue());
+
+                        stack.push(new Token("DIGIT", String.valueOf(dur2 / dur1)));
+                    }
+                    case '*' -> {
+                        if (a.getType().equals("VAR")) dur1 = variables.get(a.getValue());
+                        else dur1 = Double.parseDouble(a.getValue());
+
+                        if (b.getType().equals("VAR")) dur2 = variables.get(b.getValue());
+                        else dur2 = Double.parseDouble(b.getValue());
+
+                        stack.push(new Token("DIGIT", String.valueOf(dur2 * dur1)));
+                    }
+                    case '=' -> {
+                        Double val;
+                        if (a.getType().equals("DIGIT"))
+                            val = Double.parseDouble(a.getValue());
+                        else
+                            val = variables.get(a.getValue());
+                        variables.replace(b.getValue(), val);
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean condition_if(LinkedList<Token> cond) {
+        Stack<Token> stack = new Stack<>();
+        boolean condition = false;
+
+        for (Token i : cond) {
+            if (getPriority(i) == 0) stack.push(i);
+            if (getPriority(i) > 1) {
+                Token a = stack.pop(), b = stack.pop();
+                double dur1, dur2;
+
+                if (a.getType().equals("VAR")) dur1 = variables.get(a.getValue());
+                else dur1 = Double.parseDouble(a.getValue());
+
+                if (b.getType().equals("VAR")) dur2 = variables.get(b.getValue());
+                else dur2 = Double.parseDouble(b.getValue());
+
+                switch (i.getValue()) {
+                    case "!=" -> condition = dur1 != dur2;
+                    case "==" -> condition = dur1 == dur2;
+                    default -> {
+                        if (i.getValue().charAt(0) == '>') condition = dur2 > dur1;
+                        if (i.getValue().charAt(0) == '<') condition = dur2 < dur1;
+                    }
+                }
+            }
+        }
+        return condition;
+    }
+
 
     private int findCondition(LinkedList<Token> rpn)
     {
